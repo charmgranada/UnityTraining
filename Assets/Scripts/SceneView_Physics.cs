@@ -6,11 +6,13 @@ public class SceneView_Physics : SceneView
 {
 	void Start ()
 	{
-		setBox(new Rect(200,20,420,300));
+		setBox(new Rect(200,26,420,320));
 		setYHeight(54.0f);
 		
 		SceneModel.InitPhysics();
 		setArrCount();
+		
+		ResetView();
 	}
 	
 	
@@ -18,11 +20,9 @@ public class SceneView_Physics : SceneView
 	{
 		base.OnGUI();
 		
-		
 		// Toggle
-		string toggleText = toggleValue ? " Show Box" : " Hide Box";
-		toggleValue = GUI.Toggle(toggleRect, toggleValue, new GUIContent(toggleText), guiSkin.toggle);
-		
+		//string toggleText = toggleValue ? " Show Box" : " Hide Box";
+		//toggleValue = GUI.Toggle(toggleRect, toggleValue, new GUIContent(toggleText), guiSkin.toggle);
 		
 		// List Actions as GUI Buttons
 		for(int i = 0; i < arrCount; i++)
@@ -50,17 +50,21 @@ public class SceneView_Physics : SceneView
 			}
 			else if(buttonText == SceneModel.colliders)
 			{
-				codeText = "- OnCollisionEnter ()\n" +
-					"- OnCollisionStay ()\n" +
-					"- OnCollisionExit ()\n\n" +
-					"--> takes a Collision parameter";
+				codeText = "COLLIDERS:\n" +
+					"     - OnCollisionEnter ()\n" +
+					"     - OnCollisionStay ()\n" +
+					"     - OnCollisionExit ()\n\n" +
+					"     --> takes a Collision parameter\n\n" +
+					"<i>* Sphere collides with table</i>";
 			}
 			else if(buttonText == SceneModel.triggers)
 			{
-				codeText = "- OnTriggerEnter ()\n" +
-					"- OnTriggerStay ()\n" +
-					"- OnTriggerExit ()\n\n" +
-					"--> takes a Collider parameter";
+				codeText = "TRIGGERS:\n" +
+					"     - OnTriggerEnter ()\n" +
+					"     - OnTriggerStay ()\n" +
+					"     - OnTriggerExit ()\n\n" +
+					"     --> takes a Collider parameter\n\n" +
+					"<i>* Sphere hits trigger on the ground object\n(passes through)</i>";
 			}
 			else if(buttonText == SceneModel.rigidbodies)
 			{
@@ -74,29 +78,36 @@ public class SceneView_Physics : SceneView
 			}
 			else if(buttonText == SceneModel.addForce)
 			{
-				codeText = "rigidbody.AddForce(Vector3.forward * 100);";
+				codeText = "ADDFORCE:\n\n" +
+					"     rigidbody.AddForce(Vector3.forward * 100);\n\n" +
+					"<i>* Swipe Right/Left to apply Force</i>";
 			}
 			else if(buttonText == SceneModel.addTorque)
 			{
-				codeText = "float h = Input.GetAxis(\"Horizontal\") \n" +
+				codeText = "ADDTORQUE:\n\n" +
+					"float h = Input.GetAxis(\"Horizontal\") \n" +
 					"           * amount * Time.deltaTime;\n\n" +
 					"float v = Input.GetAxis(\"Vertical\") \n" +
 					"           * amount * Time.deltaTime;\n\n\n" +	
 					"rigidbody.AddTorque(Vector3.up  * h);\n" +
-					"rigidbody.AddTorque(Vector3.right * v);";
+					"rigidbody.AddTorque(Vector3.right * v);\n\n" +
+					"<i>* Swipe Right/Left to apply Torque</i>";
 			}
 			else if(buttonText == SceneModel.physicsMatl)
 			{
-				codeText = "// controls the surface of an object\n" +
-					"and how it responds to other\n\n" +
-					"* Dynamic Friction: while object is moving\n" +
+				codeText = "PHYSICS MATERIAL:\n" +
+					"     // controls the surface of an object\n" +
+					"     and how it responds to other\n\n" +
+					"* Dynamic Friction: while object is moving\n\n" +
 					"* Static Friction: force to move the object\n" +
-					"from a static position";
+					"from a static position\n\n" +
+					"<i>* Box physic material = 0 friction (slippery)</i>";
 			}
 			else if(buttonText == SceneModel.jointHinge || buttonText == SceneModel.jointSpring)
 			{
-				codeText = " - locks a gameobject to a point in the world,\n" +
-					"or to a connected rigidbody\n\n" +
+				codeText = "JOINTS:\n" +
+				 	"     - locks a gameobject to a point in the world,\n" +
+					"     or to a connected rigidbody\n\n" +
 					"* Fixed Joint: fixed position\n\n" +
 					"* Hinge Joint: connects 2 rigidbodies (ex. door)\n\n" +
 					"* Spring Joint: connects 2 rigidbodies\n" +
@@ -107,11 +118,13 @@ public class SceneView_Physics : SceneView
 			}
 			else if(buttonText == SceneModel.raycasting)
 			{
-				codeText = "- process of using an invisible ray\n\n" +
+				codeText = "RAYCASTING:\n\n" +
+					"     - process of using an invisible ray\n\n" +
 					"Physics.RayCast\n" +
 					"(Vector3 origin, Vector3 direction,\n" +
 					"RayCastHit hitInfo, float distance, int layerMask);\n\n\n" +
-					"<i>* draw line will show on Scene View only</i>";
+					"<i>* draw line will show on Scene View only</i>\n\n" +
+					"<i>* ex. shoots sphere bullets on where ray is casted</i>";
 			}
 			else if(buttonText == SceneModel.physicsMgr)
 			{
@@ -119,7 +132,8 @@ public class SceneView_Physics : SceneView
 					"     - defines how the layer-based\n" +
 					"       collision detection system will behave.\n\n" +
 					"     - which layers on the Collision Matrix\n" +
-					"       will interact with the other layers";
+					"       will interact with the other layers\n\n" +
+					"<i>* Edit > Project Settings > Physics (settings)</i>";
 			}
 			
 			// Set Active Function

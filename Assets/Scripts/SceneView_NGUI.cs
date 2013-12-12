@@ -11,6 +11,8 @@ public class SceneView_NGUI : SceneView
 		
 		SceneModel.InitGUI();
 		setArrCount();
+		
+		ResetView();
 	}
 	
 	public override void OnGUI ()

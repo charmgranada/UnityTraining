@@ -14,9 +14,16 @@ public class SceneController_Scripts : MonoBehaviour
 	private float yForce = 0.25f;
 	
 	private Vector3 origPosition_sphere;
+	private float raycastDist = 10f;
 	
-	private bool sphereCloned = false;
-	private bool lerpColor = true;
+	private float lowPassFactor = 0.1f;
+	private float maxOffset = 2.0f;
+	private Vector3 accelPrev = Vector3.zero;
+	//private bool sphereCloned = false;
+	//private bool lerpColor = true;
+	
+    private Vector3 vec;
+	
 	
 	void Start ()
 	{	
@@ -38,10 +45,65 @@ public class SceneController_Scripts : MonoBehaviour
 		if(SceneView_Scripts.buttonClicked && SceneModel.activeFunction != SceneModel.lerp)
 			ResetSettings();
 		
-		if(SceneView_Scripts.buttonClicked && SceneModel.activeFunction == SceneModel.instantiate)
-			InstantiateSphere();
+		//if(SceneView_Scripts.buttonClicked && SceneModel.activeFunction == SceneModel.instantiate)
+			//InstantiateSphere();
+		if(SceneModel.activeFunction == SceneModel.instantiate)
+			InstantiateShootSphere();
 		
 		CheckClick();
+	}
+	
+	
+	void LateUpdate()
+	{
+		if(SceneModel.activeFunction == SceneModel.accelerometer)
+		{
+			//acceleration = "Input.acceleration: \n" + Input.acceleration;
+			accelPrev = new Vector3(Input.acceleration.normalized.x, 0,0);
+			
+			float a = Round(Input.acceleration.x, 2);//normalized
+			
+			double b = (a * lowPassFactor) + (accelPrev.x * (1.0 - lowPassFactor) * maxOffset);
+			Debug.Log("ACCEL: " + (float)b*maxOffset);
+			
+			accelPrev = new Vector3((float)b*maxOffset,0,0);
+			
+			cubeEmpty.transform.position = accelPrev;
+		}
+	}
+	
+	
+	void InstantiateShootSphere()
+	{
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red);
+		
+		RaycastHit hit;
+		
+		if(Input.GetButton("Fire1"))
+		{
+			if(Physics.Raycast(ray.origin, ray.direction * raycastDist, out hit))
+			{
+				Vector3 newPos = hit.point;
+				
+				if(hit.point.y <= 0)
+					newPos = new Vector3(hit.point.x, 0, hit.point.z);
+				
+				Debug.Log("HitPoint: " + newPos);
+				
+				GameObject g = Instantiate(sphere_prefab, newPos, Quaternion.identity) as GameObject;
+				g.rigidbody.velocity = transform.TransformDirection(new Vector3(0,0,5f));
+				g.rigidbody.AddForce(Vector3.forward);
+				//StartCoroutine(destroySphere(g));
+			}
+		}
+	}
+	
+	
+	IEnumerator destroySphere (GameObject sphere)
+	{
+		yield return new WaitForSeconds(1.0f);
+		Destroy(sphere);
 	}
 	
 	
@@ -63,9 +125,10 @@ public class SceneController_Scripts : MonoBehaviour
 	
 	void InstantiateSphere ()
 	{	
-		// Instantiate
+		// Instantiate sphere
 		Instantiate(sphere_prefab, new Vector3(Random.Range(-3, 3), Random.Range(1.0f, 3.5f), Random.Range(2, -5)), Quaternion.identity);
 	}
+	
 	
 	//* Scripts *//
 	void Method_Scripts ()
@@ -110,26 +173,28 @@ public class SceneController_Scripts : MonoBehaviour
 		// Touch
 		else if(SceneModel.activeFunction == SceneModel.touch)
 		{
-			//touchCount = Input.touchCount;
-			//TouchInfos();
-			
 			float a = DetectTouch.x;
+			
 			Debug.Log("SceneModel.touch: " + a);
 			
 			if(SceneView_Scripts.toggleValue)
-				cubeEmpty.transform.position = new Vector3(a*5.0f,0,0);
+			{
+				MoveRotateCube(-a*1.5f);
+				//cubeEmpty.transform.position = new Vector3(a*5.0f,0,0);
+				cubeEmpty.transform.rotation = new Quaternion(0,45f,0,0);
+			}
 			else
 				cubeEmpty.transform.Rotate(new Vector3(a*5.0f,0,0));
 		}
 		
 		// Accelerometer
-		else if(SceneModel.activeFunction == SceneModel.accelerometer)
+		/*else if(SceneModel.activeFunction == SceneModel.accelerometer)
 		{
 			//acceleration = "Input.acceleration: \n" + Input.acceleration;
 			
 			float a = Round(Input.acceleration.x, 2);
 			cubeEmpty.transform.position = new Vector3(a*5.0f,0,0);
-		}
+		}*/
 		
 		// Look At
 		else if(SceneModel.activeFunction == SceneModel.lookAt)
@@ -138,17 +203,6 @@ public class SceneController_Scripts : MonoBehaviour
 			cubeEmpty.transform.LookAt(sphere.transform);
 			AnimateSphere();
 		}
-		
-		// Instantiate
-		/*else if(SceneModel.activeFunction == SceneModel.instantiate)
-		{
-			if(!sphereCloned)
-			//if(SceneView_Scripts.instantiated)
-			{
-				Instantiate(sphere_prefab, new Vector3(0, 3.5f, -5f), Quaternion.identity);
-				//sphereCloned = true;
-			}
-		}*/
 		
 		// Destroy
 		else if(SceneModel.activeFunction == SceneModel.destroy)
@@ -199,6 +253,17 @@ public class SceneController_Scripts : MonoBehaviour
 	void DestroySphere ()
 	{
 		Destroy(GameObject.Find("Sphere_Rigidbody(Clone)"));
+		
+		//Destroy objects on where Ray is cast
+		/*Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red);
+		
+		RaycastHit hit;
+		
+		if(Physics.Raycast(ray.origin, ray.direction * 100f, out hit))
+		{
+			Debug.Log(hit.collider.gameObject.name);
+		}*/
 	}
 	
 	
@@ -207,25 +272,30 @@ public class SceneController_Scripts : MonoBehaviour
 		float mult = Mathf.Pow(10.0f, (float)digits);
 		return Mathf.Round(v * mult)/mult;
 	}
-	/*void TouchInfos ()
+	
+	string TouchInfo ()
 	{
 		int i = 0;
+		string touchPhaseStr = "";
 		
 		while( i < Input.touchCount)
 		{
 			if(Input.GetTouch(i).phase == TouchPhase.Began)
-				touchPhase = "TOUCH BEGAN:\n" + Input.GetTouch(i).deltaPosition;
+				touchPhaseStr = "TOUCH BEGAN:\n" + Input.GetTouch(i).deltaPosition;
 			if(Input.GetTouch(i).phase == TouchPhase.Moved)
-				touchPhase = "TOUCH MOVED:\n" + Input.GetTouch(i).deltaPosition;
+				touchPhaseStr = "TOUCH MOVED";//:\n" + Input.GetTouch(i).deltaPosition;
 			if(Input.GetTouch(i).phase == TouchPhase.Stationary)
-				touchPhase = "TOUCH STATIONARY:\n" + Input.GetTouch(i).deltaPosition;
+				touchPhaseStr = "TOUCH STATIONARY:\n" + Input.GetTouch(i).deltaPosition;
 			if(Input.GetTouch(i).phase == TouchPhase.Ended)
-				touchPhase = "TOUCH ENDED:\n" + Input.GetTouch(i).deltaPosition;
+				touchPhaseStr = "TOUCH ENDED:\n" + Input.GetTouch(i).deltaPosition;
 			
 			++i;
 		}
 		
-		Debug.Log(touchPhase);
-	}*/
+		
+		//Debug.Log(touchPhaseStr);
+		return touchPhaseStr;
+		
+	}
 	
 }

@@ -14,15 +14,17 @@ public class SceneController_iTween : MonoBehaviour
 	private bool isClicked = false;
 	
 	
-	
-	void Start ()
+	void Awake ()
 	{
 		cubeChild = cubeEmpty.GetComponentInChildren<Transform>().GetChild(0).gameObject;
 		
 		SceneReset.InitialState(cubeEmpty, cubeChild, cubeColor);
 		
 		iTween.Init(cubeChild);
-			
+	}
+	
+	void Start ()
+	{
 		hashtable = iTween.Hash
 		(
 			"alpha", 0.0f,
@@ -43,6 +45,8 @@ public class SceneController_iTween : MonoBehaviour
 			"oncomplete", "ResetSettings",
 			"oncompletetarget", gameObject
 		);
+		
+		//ResetSettings();
 	}
 	
 	

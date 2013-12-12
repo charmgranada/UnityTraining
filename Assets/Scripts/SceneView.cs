@@ -4,7 +4,7 @@ using System.Collections;
 public class SceneView : MonoBehaviour
 {
 	public float yHeight = 60.0f;
-	public float ySpace = 32.0f;//20
+	public float ySpace = 32.0f;
 	
 	public GUISkin guiSkin;
 	
@@ -40,15 +40,18 @@ public class SceneView : MonoBehaviour
 		arrCount = SceneModel.arrList.Count;
 	}
 	
-	void Start ()
+	public void ResetView ()
 	{
+		SceneModel.activeFunction = SceneModel.reset;
+		codeText = "";
+		//Debug.Log("ACTIVE: " + SceneModel.activeFunction);
 	}
 	
 	void Update ()
-	{	
+	{
 		if(SceneModel.activeFunction == SceneModel.accelerometer)
 		{
-			codeText = DetectTouch.acceleration;// SceneController_Scripts.acceleration;
+			codeText = DetectTouch.acceleration;//SceneController_Scripts.acceleration;
 		}
 	}
 	

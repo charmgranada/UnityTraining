@@ -14,6 +14,8 @@ public class SceneView_Scripts : SceneView
 		
 		SceneModel.InitScriptActions();
 		setArrCount();
+		
+		ResetView();
 	}
 	
 	
@@ -72,8 +74,8 @@ public class SceneView_Scripts : SceneView
 					"    - retrieve status of each finger\n" +
 					"touching the screen during the last frame\n\n" +
 					"Phases:\n" +
-					"Began/Moved/Stationary/\n" +
-					"Ended/Canceled";
+					"   - Began / Moved / Stationary /\n" +
+					"     Ended / Canceled";
 			}
 			else if(buttonText == SceneModel.accelerometer)
 			{
@@ -86,13 +88,16 @@ public class SceneView_Scripts : SceneView
 			}
 			else if(buttonText == SceneModel.instantiate)
 			{
-				codeText = "Instantiate (gameObject, Vector3, Quaternion)";
+				codeText = "Instantiate (gameObject, Vector3, Quaternion)\n\n" +
+					"<i>* touch screen to instantiate sphere</i>";
 				
 				instantiated = !instantiated;
 			}
 			else if(buttonText == SceneModel.destroy)
 			{
-				codeText = "Destroy (gameObject)";
+				codeText = "Destroy (gameObject)\n\n" +
+					"    - <i>destroys any instantiated spheres\n" +
+					"      in the scene</i>";
 			}
 			else if(buttonText == SceneModel.lerp)
 			{

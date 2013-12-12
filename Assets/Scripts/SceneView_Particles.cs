@@ -11,6 +11,8 @@ public class SceneView_Particles : SceneView
 		
 		SceneModel.InitParticles();
 		setArrCount();
+		
+		ResetView();
 	}
 	
 	

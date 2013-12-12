@@ -8,6 +8,7 @@ public class SceneController_Physics : MonoBehaviour
 	public GameObject boxDrop;
 	public GameObject slidingDoor;
 	public GameObject springObj1;
+	public GameObject sphere_prefab;
 	
 	// Spring Joints
 	public GameObject springObj2;
@@ -48,7 +49,6 @@ public class SceneController_Physics : MonoBehaviour
 		isRaycast,
 		isPhyManager
 	}
-	
 	
 	
 	void Start ()
@@ -166,6 +166,7 @@ public class SceneController_Physics : MonoBehaviour
 		}
 	}
 	
+	
 	void HideAll ()
 	{
 		Debug.Log("HIDE ALL");
@@ -242,6 +243,7 @@ public class SceneController_Physics : MonoBehaviour
 			else if(SceneModel.activeFunction == SceneModel.raycasting)
 			{
 				ResetObjectState(PhysicsState.isRaycast);
+				InstantiateShootSphere();
 			}
 			// Physics Manager
 			else if(SceneModel.activeFunction == SceneModel.physicsMgr)
@@ -263,7 +265,7 @@ public class SceneController_Physics : MonoBehaviour
 			else
 			{
 				x = Input.GetAxis("Horizontal");
-				collisionLog = "\nAxis: " + x;
+				collisionLog = "";//"\nAxis: " + x;
 			}
 			
 			Debug.Log("isTouchEnabled: " + isTouchEnabled + "| x: " + x);
@@ -274,7 +276,7 @@ public class SceneController_Physics : MonoBehaviour
 				ResetObjectState(PhysicsState.isForce);
 				
 				demo_forcetorque.rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
-				demo_forcetorque.rigidbody.AddForce(Vector3.right * x * 20.0f);
+				demo_forcetorque.rigidbody.AddForce(Vector3.right * x * 30.0f);
 			}
 			// AddTorque
 			else if(SceneModel.activeFunction == SceneModel.addTorque)
@@ -285,11 +287,43 @@ public class SceneController_Physics : MonoBehaviour
 					x *= -1;
 				
 				demo_forcetorque.rigidbody.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotationX;
-				demo_forcetorque.rigidbody.AddTorque(Vector3.up * x * 20.0f);
+				demo_forcetorque.rigidbody.AddTorque(Vector3.up * x * 30.0f);
 			}
 		}
 	}
 	
+	
+	void InstantiateShootSphere()
+	{
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red);
+		
+		RaycastHit hit;
+		
+		if(Input.GetButton("Fire1"))
+		{
+			if(Physics.Raycast(ray.origin, ray.direction * 100f, out hit))
+			{
+				Vector3 newPos = hit.point;
+				
+				if(hit.point.y <= 0)
+					newPos = new Vector3(hit.point.x, 0, hit.point.z);
+				
+				Debug.Log("HitPoint: " + newPos);
+				
+				GameObject g = Instantiate(sphere_prefab, newPos, Quaternion.identity) as GameObject;
+				g.rigidbody.velocity = transform.TransformDirection(new Vector3(0,0,5f));
+				g.rigidbody.AddForce(Vector3.forward);
+				StartCoroutine(destroySphere(g));
+			}
+		}
+	}
+	
+	IEnumerator destroySphere (GameObject sphere)
+	{
+		yield return new WaitForSeconds(1.0f);
+		Destroy(sphere);
+	}
 	
 	void EnableClick (bool enable)
 	{

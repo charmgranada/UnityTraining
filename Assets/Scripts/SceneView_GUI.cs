@@ -11,6 +11,8 @@ public class SceneView_GUI : SceneView
 		
 		SceneModel.InitGUI();
 		setArrCount();
+		
+		ResetView();
 	}
 	
 	

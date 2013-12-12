@@ -10,6 +10,8 @@ public class SceneView_iTween : SceneView
 		
 		SceneModel.InitiTweens();
 		setArrCount();
+		
+		ResetView();
 	}
 	
 	

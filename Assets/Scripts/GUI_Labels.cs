@@ -36,6 +36,8 @@ public class GUI_Labels : MonoBehaviour
 	{
 		if(cube)
 			gameObjPosition.text = "Position: " + cube.transform.position.ToString();
+		else
+			gameObjPosition.text = "";
 		
 		if(isTimer)
 			ComputeTimer();
@@ -67,7 +69,7 @@ public class GUI_Labels : MonoBehaviour
 			touchPhase.text = "TouchPhase: " + DetectTouch.touchPhase + //SceneController_Scripts.touchPhase + 
 							"\n\n\nTouchCount: " + DetectTouch.touchCount; //SceneController_Scripts.touchCount;
 		else
-			touchPhase.text = "TouchPhase:";
+			touchPhase.text = "";
 	}
 	
 	
