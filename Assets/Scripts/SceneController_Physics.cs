@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SceneController_Physics : MonoBehaviour
 {
@@ -35,20 +36,9 @@ public class SceneController_Physics : MonoBehaviour
 	private bool showJoints = true;
 	private bool isTouchEnabled;
 	
-	enum PhysicsState
-	{
-		isReset = 0,
-	    isCollision = 1,
-		isTrigger = 2,
-		isRigidBody = 3,
-		isForce,
-		isTorque,
-		isPhyMaterials,
-		isJointHinge,
-		isJointSpring,
-		isRaycast,
-		isPhyManager
-	}
+	Dictionary<string,string> functionDictionary = new Dictionary<string, string>();
+	private string activeFunction = "activeFunction";
+	
 	
 	
 	void Start ()
@@ -60,11 +50,13 @@ public class SceneController_Physics : MonoBehaviour
 		origRotation_slidingDoor = slidingDoor.rigidbody.transform.rotation;
 		
 		SceneModel.activeFunction = SceneModel.reset;
+		
+		BulletManager.AddObjectPool();
 	}
 	
 	
 	void Update ()
-	{	
+	{
 		if(SceneModel.activeFunction == SceneModel.reset)
 			ResetSettings();
 		
@@ -96,50 +88,51 @@ public class SceneController_Physics : MonoBehaviour
 	}
 	
 	
-	void ResetObjectState (PhysicsState state)
+	void ResetObjectState (string activeFunc)
 	{
 		HideAll();
+		Debug.Log("active: " + activeFunc);
 		
-		switch (state)
+		switch (activeFunc)
 		{
-			case PhysicsState.isReset:
+			case SceneModel.reset:
 			{
 				Debug.Log("RESET");
 			}
 			break;
 			
 			// Collision / Trigger
-			case PhysicsState.isCollision:
-			case PhysicsState.isTrigger:
+			case SceneModel.colliders:
+			case SceneModel.triggers:
 			{
 				demo_collisiontrigger.SetActive(true);
 			}
 			break;
 			
 			// Force / Torque
-			case PhysicsState.isForce:
-			case PhysicsState.isTorque:
+			case SceneModel.addForce:
+			case SceneModel.addTorque:
 			{
 				demo_forcetorque.SetActive(true);
 			}
 			break;
 			
 			// Physic Material
-			case PhysicsState.isPhyMaterials:
+			case SceneModel.physicsMatl:
 			{
 				demo_phyMaterials.SetActive(true);
 			}
 			break;
 			
 			// Joints - Hinge
-			case PhysicsState.isJointHinge:
+			case SceneModel.jointHinge:
 			{
 				demo_jointHinge.SetActive(true);
 			}
 			break;
 			
 			// Joints - Spring
-			case PhysicsState.isJointSpring:
+			case SceneModel.jointSpring:
 			{
 				foreach(Transform t in demo_jointSpring.transform)
 				{
@@ -150,26 +143,26 @@ public class SceneController_Physics : MonoBehaviour
 			break;
 			
 			// Raycast
-			case PhysicsState.isRaycast:
+			case SceneModel.raycasting:
 			{
 				demo_raycast.SetActive(true);
+				InstantiateShootSphere();
 			}
 			break;
 			
 			// Physics Manager
-			case PhysicsState.isPhyManager:
+			case SceneModel.physicsMgr:
 			{
 				demo_phyManager.SetActive(true);
 			}
 			break;
-			
 		}
 	}
 	
 	
 	void HideAll ()
 	{
-		Debug.Log("HIDE ALL");
+		//Debug.Log("HIDE ALL");
 		demo_collisiontrigger.SetActive(false);
 		demo_forcetorque.SetActive(false);
 		demo_phyMaterials.SetActive(false);
@@ -189,7 +182,10 @@ public class SceneController_Physics : MonoBehaviour
 	
 	//* Physics *//
 	void Method_Physics ()
-	{	
+	{
+		functionDictionary[activeFunction] = SceneModel.activeFunction;
+		Debug.Log("FunctionDICTIONARY: " + functionDictionary[activeFunction]);
+			
 		if(!isClicked)
 		{	
 			if(SceneModel.activeFunction != SceneModel.reset && SceneModel.activeFunction != null)
@@ -197,59 +193,7 @@ public class SceneController_Physics : MonoBehaviour
 				EnableClick(true);
 			}
 			
-			// Reset
-			if(SceneModel.activeFunction == SceneModel.reset)
-			{
-				ResetObjectState(PhysicsState.isReset);
-			}
-			
-			// Colliders
-			else if(SceneModel.activeFunction == SceneModel.colliders)
-			{
-				ResetObjectState(PhysicsState.isCollision);
-			}
-			
-			// Triggers
-			else if(SceneModel.activeFunction == SceneModel.triggers)
-			{
-				ResetObjectState(PhysicsState.isTrigger);
-			}
-			
-			// RigidBodies
-			else if(SceneModel.activeFunction == SceneModel.rigidbodies)
-			{
-				ResetObjectState(PhysicsState.isRigidBody);
-			}
-			
-			// Physic Material
-			else if(SceneModel.activeFunction == SceneModel.physicsMatl)
-			{
-				ResetObjectState(PhysicsState.isPhyMaterials);
-			}
-			
-			// Joint - Hinge
-			else if(SceneModel.activeFunction == SceneModel.jointHinge)
-			{
-				ResetObjectState(PhysicsState.isJointHinge);
-			}
-			
-			// Joint - Spring
-			else if(SceneModel.activeFunction == SceneModel.jointSpring)
-			{
-				ResetObjectState(PhysicsState.isJointSpring);
-			}
-			
-			// Raycast
-			else if(SceneModel.activeFunction == SceneModel.raycasting)
-			{
-				ResetObjectState(PhysicsState.isRaycast);
-				InstantiateShootSphere();
-			}
-			// Physics Manager
-			else if(SceneModel.activeFunction == SceneModel.physicsMgr)
-			{
-				ResetObjectState(PhysicsState.isPhyManager);
-			}
+			ResetObjectState(functionDictionary[activeFunction]);
 		}
 		else
 		{
@@ -268,12 +212,12 @@ public class SceneController_Physics : MonoBehaviour
 				collisionLog = "";//"\nAxis: " + x;
 			}
 			
-			Debug.Log("isTouchEnabled: " + isTouchEnabled + "| x: " + x);
+			//Debug.Log("isTouchEnabled: " + isTouchEnabled + "| x: " + x);
 			
 			// AddForce
 			if(SceneModel.activeFunction == SceneModel.addForce)
 			{
-				ResetObjectState(PhysicsState.isForce);
+				ResetObjectState(functionDictionary[activeFunction]);
 				
 				demo_forcetorque.rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
 				demo_forcetorque.rigidbody.AddForce(Vector3.right * x * 30.0f);
@@ -281,7 +225,7 @@ public class SceneController_Physics : MonoBehaviour
 			// AddTorque
 			else if(SceneModel.activeFunction == SceneModel.addTorque)
 			{
-				ResetObjectState(PhysicsState.isTorque);
+				ResetObjectState(functionDictionary[activeFunction]);
 				
 				if(isTouchEnabled)
 					x *= -1;
@@ -309,20 +253,25 @@ public class SceneController_Physics : MonoBehaviour
 				if(hit.point.y <= 0)
 					newPos = new Vector3(hit.point.x, 0, hit.point.z);
 				
-				Debug.Log("HitPoint: " + newPos);
+				//Debug.Log("HitPoint: " + newPos);
 				
-				GameObject g = Instantiate(sphere_prefab, newPos, Quaternion.identity) as GameObject;
-				g.rigidbody.velocity = transform.TransformDirection(new Vector3(0,0,5f));
-				g.rigidbody.AddForce(Vector3.forward);
-				StartCoroutine(destroySphere(g));
+				BulletManager.ActivateProjectiles(newPos);
+				
+				StartCoroutine(Deactivate(BulletManager.index));
+				
+				// Not Using Object Pooling
+				/*GameObject sphere = Instantiate(sphere_prefab, newPos, Quaternion.identity) as GameObject;
+				sphere.rigidbody.velocity = transform.TransformDirection(new Vector3(0,0,5f));
+				sphere.rigidbody.AddForce(Vector3.forward);
+				Destroy(sphere, 1.0f);*/
 			}
 		}
 	}
 	
-	IEnumerator destroySphere (GameObject sphere)
+	IEnumerator Deactivate(int index)
 	{
 		yield return new WaitForSeconds(1.0f);
-		Destroy(sphere);
+		BulletManager.DeactivateProjectile(index);
 	}
 	
 	void EnableClick (bool enable)

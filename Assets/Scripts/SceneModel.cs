@@ -8,7 +8,7 @@ public class SceneModel
 	public static string currentScene;// = Application.loadedLevelName;
 		
 	// Scripts
-	public static string reset = "Reset";
+	public const string reset = "Reset";
 	public static string getButton = "GetButton";
 	public static string getKey = "GetKey";
 	public static string getAxis = "GetAxis";	
@@ -21,28 +21,28 @@ public class SceneModel
 	
 	
 	// iTweens
-	public static string fadeTo = "FadeTo";
-	public static string moveTo = "MoveTo";
-	public static string scaleTo = "ScaleTo";
-	public static string rotateTo = "RotateTo";
-	public static string rotateBy = "RotateBy";
-	public static string colorTo = "ColorTo";
-	public static string shakePosition = "ShakePosition";
-	public static string punchPosition = "PunchPosition";
-	public static string stab = "Stab";
+	public const string fadeTo = "FadeTo";
+	public const string moveTo = "MoveTo";
+	public const string scaleTo = "ScaleTo";
+	public const string rotateTo = "RotateTo";
+	public const string rotateBy = "RotateBy";
+	public const string colorTo = "ColorTo";
+	public const string shakePosition = "ShakePosition";
+	public const string punchPosition = "PunchPosition";
+	public const string stab = "Stab";
 	
 	
 	// Physics
-	public static string colliders = "colliders";
-	public static string triggers = "triggers";
-	public static string rigidbodies = "rigidbodies";
-	public static string addForce = "addForce";
-	public static string addTorque = "addTorque";
-	public static string physicsMatl = "physicMatl";
-	public static string jointHinge = "joints-Hinge";
-	public static string jointSpring = "joints-Spring";
-	public static string raycasting = "raycasting";
-	public static string physicsMgr = "physicsMgr";
+	public const string colliders = "colliders";
+	public const string triggers = "triggers";
+	public const string rigidbodies = "rigidbodies";
+	public const string addForce = "addForce";
+	public const string addTorque = "addTorque";
+	public const string physicsMatl = "physicMatl";
+	public const string jointHinge = "joints-Hinge";
+	public const string jointSpring = "joints-Spring";
+	public const string raycasting = "raycasting";
+	public const string physicsMgr = "physicsMgr";
 	
 	
 	// Particles
@@ -120,6 +120,7 @@ public class SceneModel
 		SetScene();
 		
 		arrList.Add(reset);
+		arrList.Add(raycasting);
 		arrList.Add(colliders);
 		arrList.Add(triggers);
 		arrList.Add(rigidbodies);
@@ -128,7 +129,7 @@ public class SceneModel
 		arrList.Add(physicsMatl);
 		arrList.Add(jointHinge);
 		arrList.Add(jointSpring);
-		arrList.Add(raycasting);
+		//arrList.Add(raycasting);
 		arrList.Add(physicsMgr);
 	}
 	

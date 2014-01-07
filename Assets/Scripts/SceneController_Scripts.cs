@@ -94,16 +94,8 @@ public class SceneController_Scripts : MonoBehaviour
 				GameObject g = Instantiate(sphere_prefab, newPos, Quaternion.identity) as GameObject;
 				g.rigidbody.velocity = transform.TransformDirection(new Vector3(0,0,5f));
 				g.rigidbody.AddForce(Vector3.forward);
-				//StartCoroutine(destroySphere(g));
 			}
 		}
-	}
-	
-	
-	IEnumerator destroySphere (GameObject sphere)
-	{
-		yield return new WaitForSeconds(1.0f);
-		Destroy(sphere);
 	}
 	
 	
@@ -118,8 +110,6 @@ public class SceneController_Scripts : MonoBehaviour
 		SceneReset.ResetSettings(cubeEmpty, cubeChild);
 		
 		sphere.transform.position = origPosition_sphere;
-		
-		//DestroySphere();
 	}
 	
 	

@@ -27,16 +27,7 @@ public class SceneController_NGUI : MonoBehaviour
 	
 	void Update ()
 	{
-		/*if(gameObject.name == "GroupOption")
-		{	
-			for(int i=0; i < 3; i++)
-			{
-				Transform child = gameObject.transform.GetChild(i);
-			}
-			
-			groupString = gameObject.GetComponentInChildren<UILabel>().text;
-		}
-		else */if(gameObject.name == "Slider")
+		if(gameObject.name == "Slider")
 		{
 			sliderValue  = gameObject.GetComponent<UISlider>().sliderValue;
 			sliderString = "" + sliderValue;
@@ -140,7 +131,7 @@ public class SceneController_NGUI : MonoBehaviour
 			break;
 			
 			default:
-			changeLabel.Change("---");
+				changeLabel.Change("---");
 			break;
 		}
 	}

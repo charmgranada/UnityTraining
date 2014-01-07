@@ -71,7 +71,8 @@ public class SceneView : MonoBehaviour
 		
 		// Exit Button
 		//if(GUI.Button(new Rect(10, 5, 70, 20), "BACK", customExit()))
-		if(GUI.Button(new Rect(842, 575, 100, 50), "BACK", customExit()))
+		if(GUI.Button(new Rect(600, 20, 100, 50), "BACK", customExit()))
+		//if(GUI.Button(new Rect(842, 575, 100, 50), "BACK", customExit()))
 		{
 			SceneModel.LoadMainScene();
 		}
