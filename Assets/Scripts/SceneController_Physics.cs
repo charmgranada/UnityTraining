@@ -255,24 +255,26 @@ public class SceneController_Physics : MonoBehaviour
 				
 				//Debug.Log("HitPoint: " + newPos);
 				
-				BulletManager.ActivateProjectiles(newPos);
+				BulletManager.ActivateProjectiles();
 				
-				StartCoroutine(Deactivate(BulletManager.index));
+				GameObject g = BulletManager.GetBullet();
+				g.SetActive(true);
+				g.rigidbody.transform.position = newPos;
+				g.rigidbody.velocity = transform.TransformDirection(new Vector3(0,0,20f));
+				g.rigidbody.AddForce(Vector3.forward);
 				
-				// Not Using Object Pooling
-				/*GameObject sphere = Instantiate(sphere_prefab, newPos, Quaternion.identity) as GameObject;
-				sphere.rigidbody.velocity = transform.TransformDirection(new Vector3(0,0,5f));
-				sphere.rigidbody.AddForce(Vector3.forward);
-				Destroy(sphere, 1.0f);*/
+				StartCoroutine(Deactivate(g));
 			}
 		}
 	}
 	
-	IEnumerator Deactivate(int index)
+	
+	IEnumerator Deactivate(GameObject g)
 	{
 		yield return new WaitForSeconds(1.0f);
-		BulletManager.DeactivateProjectile(index);
+		g.SetActive(false);
 	}
+	
 	
 	void EnableClick (bool enable)
 	{

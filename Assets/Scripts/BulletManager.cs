@@ -23,8 +23,6 @@ public class BulletManager : MonoBehaviour
 	{
 		if(bulletPool.Count < poolCount)
 		{
-			Debug.Log("Object POOL ---> ADD");
-		
 			for (int i = 0; i < poolCount; i++)
 			{
 				bulletPool.Add(Instantiate(bulletSample) as GameObject);
@@ -33,30 +31,27 @@ public class BulletManager : MonoBehaviour
 		}
 	}
 	
-	public static void ActivateProjectiles (Vector3 newPos)
+	public static GameObject GetBullet()
+	{
+		//get last bullet from the stack
+		GameObject g = bulletPool[0];
+		
+		if(g.activeSelf)
+		{
+			//remove the last and add at the start
+			bulletPool.Remove(g);
+			bulletPool.Add(g);
+		}
+		
+		return g;
+	}
+	
+	public static void ActivateProjectiles ()
 	{
 		if(bulletPool[0] == null)
 		{
 			bulletPool.Clear();
 			AddObjectPool();
 		}
-		
-		for (int i = 0; i < poolCount; i++)
-		{
-			Debug.Log("bulletPool: " + bulletPool[i]);
-			
-			if(bulletPool[i].activeSelf == false)
-			{
-				bulletPool[i].SetActive(true);
-				bulletPool[i].transform.position = newPos;
-				index = i;
-				return;
-			}
-		}
-	}
-	
-	public static void DeactivateProjectile (int i)
-	{
-		bulletPool[i].SetActive(false);
 	}
 }
